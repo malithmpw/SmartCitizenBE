@@ -14,17 +14,17 @@ public class IssueController {
     IssueService issueService;
 
     @GetMapping(value = "/all")
-    public ResponseEntity getRoleList() {
+    public ResponseEntity getIssueList() {
         return issueService.getIssueList();
     }
 
     @PostMapping(value = "/add")
-    public ResponseEntity addCategory(@RequestBody IssueDTO issueDTO){
+    public ResponseEntity addIssue(@RequestBody IssueDTO issueDTO){
         return issueService.addIssue(issueDTO);
     }
 
     @PostMapping(value = "/delete")
-    public ResponseEntity deleteCategory(@RequestBody IssueDTO issueDTO){
+    public ResponseEntity deleteIssue(@RequestBody IssueDTO issueDTO){
         return issueService.deleteIssue(issueDTO);
     }
 

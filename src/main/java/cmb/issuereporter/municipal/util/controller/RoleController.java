@@ -23,12 +23,12 @@ public class RoleController {
     }
 
     @PostMapping(value = "/add")
-    public ResponseEntity addCategory(@RequestBody RoleDTO roleDTO){
+    public ResponseEntity addRole(@RequestBody RoleDTO roleDTO){
         return roleService.addRole(roleDTO);
     }
 
     @PostMapping(value = "/delete")
-    public ResponseEntity deleteCategory(@RequestBody RoleDTO roleDTO){
+    public ResponseEntity deleteRole(@RequestBody RoleDTO roleDTO){
         return roleService.deleteRole(roleDTO);
     }
 }
