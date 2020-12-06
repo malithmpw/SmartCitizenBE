@@ -13,49 +13,24 @@ public class ImageSaveService {
     @Value("${file.path}")
     private String filePath;
 
-    public String saveImage(){
-        return filePath;
-    }
-
-    public String saveImage(String fileName ,String base64imageUrl,String type) throws IOException {
+    public String saveImage(String fileName ,String base64imageUrl) throws IOException {
         String link = "";
         String outPutFolder = "";
         String savedFileName = "";
 
         // creating directory
-//        String PATH = "/src/main/resources/static/upload/";
         String directoryName = filePath;//"D:\\Server\\apache-tomcat-9.0.16-windows-x64\\apache-tomcat-9.0.16\\webapps\\youthAdmin\\upload\\";
 
         File directory = new File(directoryName);
         if (! directory.exists()){
             directory.mkdir();
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
         }
 
-        switch (type)
-        {
-//          saving images for News to images/pics/News
-            case "NEWS":
-              //  log.debug("saving image for a News");
-                outPutFolder = filePath;
-                savedFileName = this.saveImageToFolder(base64imageUrl,fileName,outPutFolder);
-                link = "/upload/"+savedFileName;
-                break;
 
-//            saving images for Events to images/pics/Event
-            case "EVENT":
-             //   log.debug("saving image for a News");
-                outPutFolder = filePath;
-                savedFileName = this.saveImageToFolder(base64imageUrl,fileName,outPutFolder);
-                link = "/upload/"+savedFileName;
-                break;
-
-
-//            default value , get the subordinate users
-            default:
-                break;
-        }
+        //  log.debug("saving image for a News");
+        outPutFolder = filePath;
+        savedFileName = this.saveImageToFolder(base64imageUrl,fileName,outPutFolder);
+        link = "/upload/"+savedFileName;
 
         System.out.println("link :"+link);
         return link;

@@ -2,9 +2,12 @@ package cmb.issuereporter.municipal.issue;
 
 
 import cmb.issuereporter.municipal.dto.IssueDTO;
+import cmb.issuereporter.municipal.dto.IssueListRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -13,9 +16,14 @@ public class IssueController {
     @Autowired
     IssueService issueService;
 
-    @GetMapping(value = "/all")
-    public ResponseEntity getIssueList() {
-        return issueService.getIssueList();
+    @PostMapping(value = "/all")
+    public ResponseEntity getIssueList(@RequestBody IssueListRequestDTO issueListRequestDTO) {
+        return issueService.getIssueList(issueListRequestDTO);
+    }
+
+    @PostMapping(value = "/update")
+    public ResponseEntity updateIssue(@RequestBody List<IssueDTO> issueDTOs){
+        return issueService.updateIssue(issueDTOs);
     }
 
     @PostMapping(value = "/add")

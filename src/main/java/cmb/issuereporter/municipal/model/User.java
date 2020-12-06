@@ -31,5 +31,8 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @OneToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }

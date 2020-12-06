@@ -1,21 +1,32 @@
 package cmb.issuereporter.municipal.issue;
 
-import cmb.issuereporter.municipal.dto.CustomError;
-import cmb.issuereporter.municipal.dto.IssueDTO;
+import cmb.issuereporter.municipal.dto.*;
 import cmb.issuereporter.municipal.model.Issue;
+import cmb.issuereporter.municipal.model.User;
 import cmb.issuereporter.municipal.user.UserService;
 import cmb.issuereporter.municipal.util.service.AreaService;
 import cmb.issuereporter.municipal.util.service.CategoryService;
 import cmb.issuereporter.municipal.util.service.ImageSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 public class IssueService {
+    @Value("${page.item.count}")
+    private int pageItemCount;
 
     @Autowired
     IssueRepository issueRepository;
@@ -35,12 +46,12 @@ public class IssueService {
     public ResponseEntity addIssue(IssueDTO issueDTO){
             Issue issue = new Issue();
             issue.setDescription(issueDTO.getDescription());
-            issue.setImageUrl(issueDTO.getImageUrl());
+
             issue.setStatus(issueDTO.getStatus());
             issue.setLat(issueDTO.getLat());
             issue.setLon(issueDTO.getLon());
-            issue.setCreatedDate(issueDTO.getCreatedDate());
-            issue.setUpdatedDate(issueDTO.getUpdatedDate());
+            issue.setCreatedDate(new Date());
+            issue.setUpdatedDate(new Date());
             if(issueDTO.getUser() != null)
                 issue.setUser(userService.getUser(issueDTO.getUser().getId()));
             if(issueDTO.getArea() != null)
@@ -51,6 +62,22 @@ public class IssueService {
                 issue.setAssignee(userService.getUser(issueDTO.getAssignee().getId()));
             if(issueDTO.getCategory() != null)
                 issue.setCategory(categoryService.findById(issueDTO.getCategory().getId()));
+
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyy");
+            try {
+                if(issueDTO.getImageToSave() != null) {
+                    String[] imageArray = issueDTO.getImageToSave();
+                    String[] imageLinks = new String[imageArray.length];
+                    for (int k = 0; k < imageArray.length; k++) {
+                        String imageName = formatter.format(date) + "-" + System.currentTimeMillis() + k;
+                        imageLinks[k] = imageSaveService.saveImage(imageName, imageArray[k]);
+                    }
+                    issue.setImageUrl(imageLinks);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
             issue = issueRepository.save(issue);
             if(issue != null){
@@ -60,36 +87,48 @@ public class IssueService {
              }
     }
 
-    public ResponseEntity updateIssue(IssueDTO issueDTO){
-        Issue issue = issueRepository.findById(issueDTO.getId()).orElse(null);
-        if(issue != null){
-            issue.setDescription(issueDTO.getDescription());
-            issue.setImageUrl(issueDTO.getImageUrl());
-            issue.setStatus(issueDTO.getStatus());
-            issue.setLat(issueDTO.getLat());
-            issue.setLon(issueDTO.getLon());
-            issue.setCreatedDate(issueDTO.getCreatedDate());
-            issue.setUpdatedDate(issueDTO.getUpdatedDate());
-            if(issueDTO.getUser() != null)
-                issue.setUser(userService.getUser(issueDTO.getUser().getId()));
-            if(issueDTO.getArea() != null)
-                issue.setArea(areaService.findById(issueDTO.getArea().getId()));
-            if(issueDTO.getAssignBy() != null)
-                issue.setAssignBy(userService.getUser(issueDTO.getAssignBy().getId()));
-            if(issueDTO.getAssignee() != null)
-                issue.setAssignee(userService.getUser(issueDTO.getAssignee().getId()));
-            if(issueDTO.getCategory() != null)
-                issue.setCategory(categoryService.findById(issueDTO.getCategory().getId()));
+    public ResponseEntity updateIssue(List<IssueDTO> issueDTOs){
+        List<Issue> updatedIssues = new ArrayList<>();
+        issueDTOs.stream().forEach(issueDTO -> {
+            Issue issue = issueRepository.findById(issueDTO.getId()).orElse(null);
+            if(issue != null) {
+                issue.setDescription(issueDTO.getDescription());
+                issue.setImageUrl(issueDTO.getImageUrl());
+                issue.setStatus(issueDTO.getStatus());
+                issue.setLat(issueDTO.getLat());
+                issue.setLon(issueDTO.getLon());
+                issue.setCreatedDate(issueDTO.getCreatedDate());
+                issue.setUpdatedDate(issueDTO.getUpdatedDate());
+                if (issueDTO.getUser() != null)
+                    issue.setUser(userService.getUser(issueDTO.getUser().getId()));
+                if (issueDTO.getArea() != null)
+                    issue.setArea(areaService.findById(issueDTO.getArea().getId()));
+                if (issueDTO.getAssignBy() != null)
+                    issue.setAssignBy(userService.getUser(issueDTO.getAssignBy().getId()));
+                if (issueDTO.getAssignee() != null)
+                    issue.setAssignee(userService.getUser(issueDTO.getAssignee().getId()));
+                if (issueDTO.getCategory() != null)
+                    issue.setCategory(categoryService.findById(issueDTO.getCategory().getId()));
 
-            issue = issueRepository.save(issue);
-            if(issue != null){
-                return new ResponseEntity(issue, HttpStatus.OK);
-            }else {
-                return new ResponseEntity(new CustomError(3004, "Issue Update failed"), HttpStatus.OK);
+                if (issueDTO.getImageToSave() != null && issueDTO.getImageToSave().length > 0) {
+                    Date date = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyy");
+                    try {
+                        String[] imageArray = issueDTO.getImageToSave();
+                        String[] imageLinks = new String[imageArray.length];
+                        for (int k = 0; k < imageArray.length; k++) {
+                            String imageName = formatter.format(date) + "-" + System.currentTimeMillis() + k;
+                            imageLinks[k] = imageSaveService.saveImage(imageName, imageArray[k]);
+                        }
+                        issue.setImageUrl(imageLinks);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                updatedIssues.add(issueRepository.save(issue));
             }
-        }else{
-            return new ResponseEntity(new CustomError(3001, "Issue Not Found"), HttpStatus.OK);
-        }
+        });
+        return new ResponseEntity(updatedIssues, HttpStatus.OK);
 
     }
 
@@ -105,9 +144,93 @@ public class IssueService {
     }
 
 
-    public ResponseEntity getIssueList(){
-        List<Issue> issueList = issueRepository.findAll();
-        return new ResponseEntity(issueList, HttpStatus.OK);
+    public ResponseEntity getIssueList(IssueListRequestDTO issueListRequestDTO){
+        Pageable sortedByDate =
+                PageRequest.of(issueListRequestDTO.getPageNo(), pageItemCount, Sort.by("createdDate"));
+        User user = userService.getUser(issueListRequestDTO.getUserId());
+        Page<Issue> issueListPage = null;
+        Date startDate = null;
+        Date endDate = null;
+        try{
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            startDate = dateFormat.parse(issueListRequestDTO.getStartDate());
+            endDate = dateFormat.parse(issueListRequestDTO.getEndDate());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(startDate != null && endDate != null){
+            if(user.getRole() == null || user.getRole().getName().equals("USER")){
+                issueListPage = issueRepository.findIssue(null, null, user.getId(), issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+            }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_USER")){
+                issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+            }else if(user.getRole() != null && user.getRole().getName().equals("ADMIN")){
+                issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+            }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_ADMIN")){
+                issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+            }
+        }
+        IssueListResponseDTO issueListResponseDTO = new IssueListResponseDTO();
+        List<IssueDTO> issueDTOList = new ArrayList<>();
+        issueListPage.getContent().stream().forEach(issue ->{
+            IssueDTO issueDTO = new IssueDTO();
+            issueDTO.setId(issue.getId());
+            issueDTO.setCreatedDate(issue.getCreatedDate());
+            issueDTO.setUpdatedDate(issue.getUpdatedDate());
+            issueDTO.setImageUrl(issue.getImageUrl());
+            issueDTO.setDescription(issue.getDescription());
+            issueDTO.setLat(issue.getLat());
+            issueDTO.setLon(issue.getLon());
+            issueDTO.setStatus(issue.getStatus());
+            if(issue.getAssignee() != null){
+                UserDTO userDTO = new UserDTO();
+                userDTO.setEmail(issue.getAssignee().getEmail());
+                userDTO.setFirstName(issue.getAssignee().getFirstName());
+                userDTO.setLastName(issue.getAssignee().getLastName());
+                userDTO.setId(issue.getAssignee().getId());
+                userDTO.setPhoneNo(issue.getAssignee().getPhoneNo());
+                userDTO.setRole(issue.getAssignee().getRole());
+                issueDTO.setAssignee(userDTO);
+            }
+            if(issue.getAssignBy() != null){
+                UserDTO userDTO = new UserDTO();
+                userDTO.setEmail(issue.getAssignBy().getEmail());
+                userDTO.setFirstName(issue.getAssignBy().getFirstName());
+                userDTO.setLastName(issue.getAssignBy().getLastName());
+                userDTO.setId(issue.getAssignBy().getId());
+                userDTO.setPhoneNo(issue.getAssignBy().getPhoneNo());
+                userDTO.setRole(issue.getAssignBy().getRole());
+                issueDTO.setAssignBy(userDTO);
+            }
+            if(issue.getUser() != null){
+                UserDTO userDTO = new UserDTO();
+                userDTO.setEmail(issue.getUser().getEmail());
+                userDTO.setFirstName(issue.getUser().getFirstName());
+                userDTO.setLastName(issue.getUser().getLastName());
+                userDTO.setId(issue.getUser().getId());
+                userDTO.setPhoneNo(issue.getUser().getPhoneNo());
+                userDTO.setRole(issue.getUser().getRole());
+                issueDTO.setUser(userDTO);
+            }
+            if(issue.getCategory() != null){
+                CategoryDTO categoryDTO = new CategoryDTO();
+                categoryDTO.setId(issue.getCategory().getId());
+                categoryDTO.setName(issue.getCategory().getName());
+                categoryDTO.setDescription(issue.getCategory().getDescription());
+                issueDTO.setCategory(categoryDTO);
+            }
+            if(issue.getArea() != null){
+                AreaDTO areaDTO = new AreaDTO();
+                areaDTO.setId(issue.getArea().getId());
+                areaDTO.setName(issue.getArea().getName());
+                issueDTO.setArea(areaDTO);
+            }
+            issueDTOList.add(issueDTO);
+        });
+        issueListResponseDTO.setIssueList(issueDTOList);
+        issueListResponseDTO.setPageCount(issueListPage.getTotalPages());
+        issueListResponseDTO.setTotalCount(issueListPage.getTotalElements());
 
+        return new ResponseEntity(issueListResponseDTO, HttpStatus.OK);
      }
 }
