@@ -1,5 +1,6 @@
 package cmb.issuereporter.municipal.user;
 
+import cmb.issuereporter.municipal.dto.ChangePasswordRequestDTO;
 import cmb.issuereporter.municipal.dto.CustomError;
 import cmb.issuereporter.municipal.dto.LoginRequestDTO;
 import cmb.issuereporter.municipal.dto.UserDTO;
@@ -34,5 +35,10 @@ public class UserController {
     @PostMapping("/delete")
     public ResponseEntity deleteUser(@RequestBody UserDTO userDTO){
         return userService.deleteUser(userDTO);
+    }
+
+    @PostMapping("/password/reset")
+    public ResponseEntity passwordResetUser(@RequestBody ChangePasswordRequestDTO changePasswordRequestDTO){
+        return userService.resetPasswordUser(changePasswordRequestDTO);
     }
 }

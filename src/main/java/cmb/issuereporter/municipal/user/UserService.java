@@ -1,5 +1,6 @@
 package cmb.issuereporter.municipal.user;
 
+import cmb.issuereporter.municipal.dto.ChangePasswordRequestDTO;
 import cmb.issuereporter.municipal.dto.CustomError;
 import cmb.issuereporter.municipal.dto.UserDTO;
 import cmb.issuereporter.municipal.model.User;
@@ -71,6 +72,21 @@ public class UserService {
                 return new ResponseEntity(user, HttpStatus.OK);
             }else{
                 return new ResponseEntity(new CustomError(3004, "User Creation failed"), HttpStatus.OK);
+            }
+        }else{
+            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.OK);
+        }
+    }
+
+    public ResponseEntity resetPasswordUser(ChangePasswordRequestDTO changePasswordRequestDTO){
+        User user = userRepository.findByPhoneNo(changePasswordRequestDTO.getUserId());
+        if(user != null){
+            if(user.getPassword().equals(changePasswordRequestDTO.getOldPassword())){
+                user.setPassword(changePasswordRequestDTO.getNewPassword());
+                user = userRepository.save(user);
+                return new ResponseEntity(user, HttpStatus.OK);
+            }else{
+                return new ResponseEntity(new CustomError(3005,"Old Password not matched"), HttpStatus.OK);
             }
         }else{
             return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.OK);
