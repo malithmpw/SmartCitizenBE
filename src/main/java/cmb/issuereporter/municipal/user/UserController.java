@@ -10,12 +10,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping(value = "/api/v1/user")
 public class UserController {
 
     @Autowired
     UserService userService;
+
+    @GetMapping("/test")
+    public ResponseEntity test(){
+        return new ResponseEntity("Badu Enawa OI...  "+new Date(), HttpStatus.OK);
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO loginRequestDTO){
