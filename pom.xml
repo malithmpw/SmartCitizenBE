@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>cmb.issuereporter</groupId>
-	<artifactId>municipal</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>smartcity</artifactId>
+	<version>0.0.7-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>municipal</name>
 	<description>Issue report project for Colombo municipal council</description>
@@ -49,7 +49,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security</groupId>			<artifactId>spring-security-test</artifactId>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
