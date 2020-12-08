@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+
+  mariadb:
+    image: mariadb:10.5
+    environment:
+      TZ: Asia/Colombo
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: smartcity
+      MYSQL_USER: smartcity
+      MYSQL_PASSWORD: TQTfghGJCVrtiBCxjL3q8QME8mLfFdX2
+      MYSQL_ROOT_PASSWORD: WsdU2dHeF7URxZTtBKGmPUm7iKv2DuyD
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - smartcity
+    ports:
+      - 3306:3306
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role==manager
+
+  webapp:
+    image: malithmpw/smart-city-be-app:1.0.7
+    depends_on:
+      - mariadb
+    environment:
+      TZ: Asia/Colombo
+    command: >-
+      --logging.level.root=INFO
+      --spring.datasource.url=jdbc:mysql://mariadb:3306/smartcity
+      --spring.datasource.username=smartcity
+      --spring.datasource.password=TQTfghGJCVrtiBCxjL3q8QME8mLfFdX2
+    networks:
+      - smartcity
+    volumes:
+      - static-assets:/usr/src/app/static
+    ports:
+      - 9001:9001
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  mariadb-data:
+  static-assets:
+
+networks:
+  smartcity:
