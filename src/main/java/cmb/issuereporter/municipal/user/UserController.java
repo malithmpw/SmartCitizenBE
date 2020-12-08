@@ -21,7 +21,7 @@ public class UserController {
 
     @GetMapping("/test")
     public ResponseEntity test(){
-        return new ResponseEntity("Badu Enawa OI...  "+new Date(), HttpStatus.OK);
+        return new ResponseEntity("Automatic build trigger...  "+new Date(), HttpStatus.OK);
     }
 
 
