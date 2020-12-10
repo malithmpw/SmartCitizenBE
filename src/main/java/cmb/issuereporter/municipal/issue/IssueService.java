@@ -7,6 +7,8 @@ import cmb.issuereporter.municipal.user.UserService;
 import cmb.issuereporter.municipal.util.service.AreaService;
 import cmb.issuereporter.municipal.util.service.CategoryService;
 import cmb.issuereporter.municipal.util.service.ImageSaveService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -43,6 +45,7 @@ public class IssueService {
     @Autowired
     ImageSaveService imageSaveService;
 
+    private static final Logger LOGGER = LogManager.getLogger(IssueService.class);
     public ResponseEntity addIssue(IssueDTO issueDTO){
             Issue issue = new Issue();
             issue.setDescription(issueDTO.getDescription());
@@ -72,6 +75,7 @@ public class IssueService {
                     for (int k = 0; k < imageArray.length; k++) {
                         String imageName = formatter.format(date) + "-" + System.currentTimeMillis() + k;
                         imageLinks[k] = imageSaveService.saveImage(imageName, imageArray[k]);
+                        LOGGER.info("Issue Image save : " + imageLinks[k]);
                     }
                     issue.setImageUrl(imageLinks);
                 }
@@ -81,9 +85,11 @@ public class IssueService {
 
             issue = issueRepository.save(issue);
             if(issue != null){
+                LOGGER.info("Issue Save : Success ");
                 return new ResponseEntity(issue, HttpStatus.OK);
             }else {
-                return new ResponseEntity(new CustomError(3004, "Issue Creation failed"), HttpStatus.OK);
+                LOGGER.info("Issue Save : Fail ");
+                return new ResponseEntity(new CustomError(3004, "Issue Creation failed"), HttpStatus.NOT_FOUND);
              }
     }
 
@@ -119,13 +125,18 @@ public class IssueService {
                         for (int k = 0; k < imageArray.length; k++) {
                             String imageName = formatter.format(date) + "-" + System.currentTimeMillis() + k;
                             imageLinks[k] = imageSaveService.saveImage(imageName, imageArray[k]);
+                            LOGGER.info("Issue Image save : "+ imageLinks[k]);
                         }
                         issue.setImageUrl(imageLinks);
                     } catch (Exception e) {
+                        LOGGER.info("Issue Image save : fail  ");
                         e.printStackTrace();
                     }
                 }
+                LOGGER.info("Issue Update : Success  ");
                 updatedIssues.add(issueRepository.save(issue));
+            }else {
+                LOGGER.info("Issue Not found  "+ issueDTO.getId());
             }
         });
         return new ResponseEntity(updatedIssues, HttpStatus.OK);
@@ -137,9 +148,11 @@ public class IssueService {
         Issue issue = issueRepository.findById(issueDTO.getId()).orElse(null);
         if(issue != null){
             issueRepository.delete(issue);
+            LOGGER.info("Issue Delete : Success  "+ issueDTO.getId());
             return new ResponseEntity("Successfully Deleted Issue", HttpStatus.OK);
         }else {
-            return new ResponseEntity(new CustomError(3001, "Issue Not Found"), HttpStatus.OK);
+            LOGGER.info("Issue Delete : Issue Not Found  "+ issueDTO.getId());
+            return new ResponseEntity(new CustomError(3001, "Issue Not Found"), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -162,12 +175,16 @@ public class IssueService {
         if(startDate != null && endDate != null){
             if(user.getRole() == null || user.getRole().getName().equals("USER")){
                 issueListPage = issueRepository.findIssue(null, null, user.getId(), issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+                LOGGER.info("Issue Search by USER  ");
             }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_USER")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+                LOGGER.info("Issue Search by SUPER_USER  ");
             }else if(user.getRole() != null && user.getRole().getName().equals("ADMIN")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+                LOGGER.info("Issue Search by ADMIN  ");
             }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_ADMIN")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+                LOGGER.info("Issue Search by SUPER_ADMIN  ");
             }
         }
         IssueListResponseDTO issueListResponseDTO = new IssueListResponseDTO();
@@ -227,6 +244,7 @@ public class IssueService {
             }
             issueDTOList.add(issueDTO);
         });
+        LOGGER.info("Issue Search result count  : "+ issueDTOList.size());
         issueListResponseDTO.setIssueList(issueDTOList);
         issueListResponseDTO.setPageCount(issueListPage.getTotalPages());
         issueListResponseDTO.setTotalCount(issueListPage.getTotalElements());

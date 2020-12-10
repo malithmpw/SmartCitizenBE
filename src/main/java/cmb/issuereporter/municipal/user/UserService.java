@@ -4,28 +4,43 @@ import cmb.issuereporter.municipal.dto.ChangePasswordRequestDTO;
 import cmb.issuereporter.municipal.dto.CustomError;
 import cmb.issuereporter.municipal.dto.UserDTO;
 import cmb.issuereporter.municipal.model.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    private static final Logger LOGGER = LogManager.getLogger(UserService.class);
+
     public ResponseEntity login(String phoneNo, String password){
-        User user = userRepository.findByPhoneNoAndPassword(phoneNo, password);
+        User user = userRepository.findByPhoneNo(phoneNo);
         if(user == null){
-            return new ResponseEntity<>(new CustomError(3001,"Phone number or Password Incorrect"), HttpStatus.OK);
+            LOGGER.info("Phone number Incorrect : " + phoneNo);
+            return new ResponseEntity<>(new CustomError(3001,"Phone number Incorrect"), HttpStatus.NOT_FOUND);
         }else{
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            if(password.equals(user.getPassword())){
+                LOGGER.info("User Found  : " + phoneNo);
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            }else{
+                LOGGER.info("Password Incorrect  : " + phoneNo);
+                return new ResponseEntity<>(new CustomError(3001,"Password Incorrect"), HttpStatus.NOT_FOUND);
+            }
+
         }
     }
 
     public ResponseEntity userRegistration(UserDTO userDTO) {
         if(checkPhoneNoAlreadyExist(userDTO.getPhoneNo())){
-            return new ResponseEntity<>(new CustomError(3002,"Phone Number Already Exist"), HttpStatus.OK);
+            LOGGER.info("User Registration : Phone Number Already Exist  : " + userDTO.getPhoneNo());
+            return new ResponseEntity<>(new CustomError(3002,"Phone Number Already Exist"), HttpStatus.NOT_FOUND);
         }else {
             User newUser = new User();
             newUser.setEmail(userDTO.getEmail());
@@ -36,8 +51,10 @@ public class UserService {
             newUser.setRole(userDTO.getRole());
             User user = userRepository.save(newUser);
             if (user == null) {
-                return new ResponseEntity<>(new CustomError(3003,"User Registration failed"), HttpStatus.OK);
+                LOGGER.info("User Registration : Fail  : " + userDTO.getPhoneNo());
+                return new ResponseEntity<>(new CustomError(3003,"User Registration failed"), HttpStatus.NOT_FOUND);
             } else {
+                LOGGER.info("User Registration : Success  : " + userDTO.getPhoneNo());
                 return new ResponseEntity<>(user, HttpStatus.OK);
             }
         }
@@ -69,12 +86,15 @@ public class UserService {
             user = userRepository.save(user);
 
             if(user != null){
+                LOGGER.info("User Update : Success  : " + userDTO.getPhoneNo());
                 return new ResponseEntity(user, HttpStatus.OK);
             }else{
-                return new ResponseEntity(new CustomError(3004, "User Creation failed"), HttpStatus.OK);
+                LOGGER.info("User Update : Fail  : " + userDTO.getPhoneNo());
+                return new ResponseEntity(new CustomError(3004, "User Creation failed"), HttpStatus.NOT_FOUND);
             }
         }else{
-            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.OK);
+            LOGGER.info("User Update : User Not Found  : " + userDTO.getPhoneNo());
+            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -84,12 +104,15 @@ public class UserService {
             if(user.getPassword().equals(changePasswordRequestDTO.getOldPassword())){
                 user.setPassword(changePasswordRequestDTO.getNewPassword());
                 user = userRepository.save(user);
+                LOGGER.info("Password reset : Success  : " + changePasswordRequestDTO.getUserId());
                 return new ResponseEntity(user, HttpStatus.OK);
             }else{
-                return new ResponseEntity(new CustomError(3005,"Old Password not matched"), HttpStatus.OK);
+                LOGGER.info("Password reset : Old Password not matched  : " + changePasswordRequestDTO.getUserId());
+                return new ResponseEntity(new CustomError(3005,"Old Password not matched"), HttpStatus.NOT_FOUND);
             }
         }else{
-            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.OK);
+            LOGGER.info("Password reset : User Not Found  : " + changePasswordRequestDTO.getUserId());
+            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -97,10 +120,17 @@ public class UserService {
         User user = userRepository.findById(userDTO.getId()).orElse(null);
         if(user != null){
             userRepository.delete(user);
+            LOGGER.info("User Delete : Success  : " + userDTO.getPhoneNo());
             return new ResponseEntity("Successfully Deleted User", HttpStatus.OK);
         }else{
-            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.OK);
+            LOGGER.info("User Delete : User Not Found  : " + userDTO.getPhoneNo());
+            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    public List<User> getAdminList(String roleName) {
+        LOGGER.info("Get Admin User List  " );
+        return userRepository.getAdminUserList(roleName);
     }
 }
