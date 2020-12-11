@@ -62,6 +62,7 @@ public class ImageSaveService {
             imageOutFile.write(imageByteArray);
             imageOutFile.close();
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.info("convert string to image FAIL ... !!!");
         }
 
