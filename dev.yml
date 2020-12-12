@@ -26,7 +26,7 @@ services:
           - node.role==manager
 
   webapp:
-    image: malithmpw/smart-city-be-app:1.0.7
+    image: malithmpw/smart-city-be:latest
     depends_on:
       - mariadb
     environment:
@@ -39,7 +39,10 @@ services:
     networks:
       - smartcity
     volumes:
-      - static-assets:/usr/src/app/static
+      # Make sure to create /opt/smart-city/static directory on host and grant necessary permissions
+      # mkdir -p /opt/smart-city/static
+      # chown 1001:1001 /opt/smart-city/static
+      - /opt/smart-city/static:/usr/src/app/static
     ports:
       - 9001:9001
     deploy:
@@ -49,7 +52,6 @@ services:
 
 volumes:
   mariadb-data:
-  static-assets:
 
 networks:
   smartcity:
