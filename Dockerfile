@@ -32,8 +32,6 @@ USER 1001
 
 WORKDIR /usr/src/app
 
-RUN chown 755 /usr/scr/app/static
-
 EXPOSE 9001
 
 ENTRYPOINT ["java","-jar","app.jar","--spring.config.location=application.properties","--spring.cloud.bootstrap.location=bootstrap.properties"]
