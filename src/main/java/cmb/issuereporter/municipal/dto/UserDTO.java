@@ -1,5 +1,6 @@
 package cmb.issuereporter.municipal.dto;
 
+import cmb.issuereporter.municipal.model.Category;
 import cmb.issuereporter.municipal.model.Role;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,4 +15,5 @@ public class UserDTO {
     private String email;
     private String password;
     private Role role;
+    private Category category;
 }

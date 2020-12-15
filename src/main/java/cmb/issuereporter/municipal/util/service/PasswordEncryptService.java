@@ -1,8 +1,11 @@
 package cmb.issuereporter.municipal.util.service;
 
+import org.springframework.stereotype.Service;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@Service
 public class PasswordEncryptService {
 
         public String  encryptedPassword(String passwrod)

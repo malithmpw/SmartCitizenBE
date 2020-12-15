@@ -4,6 +4,7 @@ import cmb.issuereporter.municipal.dto.ChangePasswordRequestDTO;
 import cmb.issuereporter.municipal.dto.CustomError;
 import cmb.issuereporter.municipal.dto.UserDTO;
 import cmb.issuereporter.municipal.model.User;
+import cmb.issuereporter.municipal.util.service.PasswordEncryptService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PasswordEncryptService passwordEncryptService;
 
     private static final Logger LOGGER = LogManager.getLogger(UserService.class);
 
@@ -96,6 +100,57 @@ public class UserService {
             LOGGER.info("User Update : User Not Found  : " + userDTO.getPhoneNo());
             return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity updateAdminUser(UserDTO userDTO){
+        User user = getUser(userDTO.getId());
+        if(user != null){
+            user.setCategory(userDTO.getCategory());
+            user.setRole(userDTO.getRole());
+            if(!(userDTO.getPassword() == null || userDTO.getPassword() == "")){
+                user.setPassword(passwordEncryptService.encryptedPassword(userDTO.getPassword()));
+            }
+            user.setFirstName(userDTO.getFirstName());
+            user.setLastName(userDTO.getLastName());
+            user.setEmail(userDTO.getEmail());
+            user = userRepository.save(user);
+
+            if(user != null){
+                LOGGER.info("User Update : Success  : " + userDTO.getPhoneNo());
+                return new ResponseEntity(user, HttpStatus.OK);
+            }else{
+                LOGGER.info("User Update : Fail  : " + userDTO.getPhoneNo());
+                return new ResponseEntity(new CustomError(3004, "User Creation failed"), HttpStatus.NOT_FOUND);
+            }
+        }else{
+            LOGGER.info("User Update : User Not Found  : " + userDTO.getPhoneNo());
+            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity adminUserRegistration(UserDTO userDTO) {
+        if(checkPhoneNoAlreadyExist(userDTO.getPhoneNo())){
+            LOGGER.info("User Registration : Phone Number Already Exist  : " + userDTO.getPhoneNo());
+            return new ResponseEntity<>(new CustomError(3002,"Phone Number Already Exist"), HttpStatus.NOT_FOUND);
+        }else {
+            User newUser = new User();
+            newUser.setEmail(userDTO.getEmail());
+            newUser.setFirstName(userDTO.getFirstName());
+            newUser.setLastName(userDTO.getLastName());
+            newUser.setPassword(passwordEncryptService.encryptedPassword(userDTO.getPassword()));
+            newUser.setPhoneNo(userDTO.getPhoneNo());
+            newUser.setRole(userDTO.getRole());
+            newUser.setCategory(userDTO.getCategory());
+            User user = userRepository.save(newUser);
+            if (user == null) {
+                LOGGER.info("User Registration : Fail  : " + userDTO.getPhoneNo());
+                return new ResponseEntity<>(new CustomError(3003,"User Registration failed"), HttpStatus.NOT_FOUND);
+            } else {
+                LOGGER.info("User Registration : Success  : " + userDTO.getPhoneNo());
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            }
+        }
+
     }
 
     public ResponseEntity resetPasswordUser(ChangePasswordRequestDTO changePasswordRequestDTO){

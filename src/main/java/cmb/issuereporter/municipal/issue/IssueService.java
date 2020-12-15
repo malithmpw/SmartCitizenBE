@@ -174,7 +174,7 @@ public class IssueService {
         }
         if(startDate != null && endDate != null){
             if(user.getRole() == null || user.getRole().getName().equals("USER")){
-                issueListPage = issueRepository.findIssue(null, null, user.getId(), issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+                issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), user.getId(), issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
                 LOGGER.info("Issue Search by USER  ");
             }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_USER")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);

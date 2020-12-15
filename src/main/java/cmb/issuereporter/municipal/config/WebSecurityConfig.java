@@ -16,7 +16,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/api/v1/**").permitAll()
+                .antMatchers("/admin/api/v1/**").permitAll()
                 .antMatchers("/upload/**").permitAll()
+                .antMatchers("/index.html").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic();
     }

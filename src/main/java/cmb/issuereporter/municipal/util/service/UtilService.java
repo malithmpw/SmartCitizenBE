@@ -1,6 +1,7 @@
 package cmb.issuereporter.municipal.util.service;
 
 import cmb.issuereporter.municipal.dto.AppDataResponse;
+import cmb.issuereporter.municipal.dto.UserDTO;
 import cmb.issuereporter.municipal.model.Area;
 import cmb.issuereporter.municipal.model.Category;
 import cmb.issuereporter.municipal.model.Role;
@@ -36,20 +37,35 @@ public class UtilService {
         List<Category> categories= categoryService.getAllCategoryList();
         List<Area> areas = areaService.getAllAreaList();
         List<User> users = new ArrayList<>();
+        List<UserDTO> userDTOS = new ArrayList<>();
         if(userId != null){
             User user = userService.getUser(userId);
             if(!(user.getRole() == null || user.getRole().getName().equals("USER"))){
-               users = userService.getAdminList("ADMIN");
+
+                users = userService.getAdminList("ADMIN");
+                users.stream().forEach(userObj -> {
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.setId(userObj.getId());
+                    userDTO.setEmail(userObj.getEmail());
+                    userDTO.setFirstName(userObj.getFirstName());
+                    userDTO.setLastName(userObj.getLastName());
+                    userDTO.setPhoneNo(userObj.getPhoneNo());
+                    userDTO.setRole(userObj.getRole());
+                    userDTO.setCategory(userObj.getCategory());
+                    userDTOS.add(userDTO);
+                });
                 LOGGER.info("Get App Data For Admin : " + userId);
             }
         }
         AppDataResponse appDataResponse = new AppDataResponse();
-        appDataResponse.setAdminUserList(users);
+        appDataResponse.setAdminUserList(userDTOS);
         appDataResponse.setCategoryList(categories);
         appDataResponse.setRoleList(roles);
         appDataResponse.setAreas(areas);
 
         return new ResponseEntity(appDataResponse, HttpStatus.OK);
     }
+
+
 
 }
