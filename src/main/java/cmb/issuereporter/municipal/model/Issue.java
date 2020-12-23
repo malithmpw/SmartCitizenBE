@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
@@ -29,10 +30,10 @@ public class Issue {
     private Double lon;
 
     @Column(name = "created_date")
-    private Date createdDate;
+    private Timestamp createdDate;
 
     @Column(name = "updated_date")
-    private Date updatedDate;
+    private Timestamp updatedDate;
 
     @OneToOne
     @JoinColumn(name = "category_id")

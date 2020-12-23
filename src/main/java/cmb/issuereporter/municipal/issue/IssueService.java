@@ -7,6 +7,7 @@ import cmb.issuereporter.municipal.user.UserService;
 import cmb.issuereporter.municipal.util.service.AreaService;
 import cmb.issuereporter.municipal.util.service.CategoryService;
 import cmb.issuereporter.municipal.util.service.ImageSaveService;
+import cmb.issuereporter.municipal.util.service.UtilService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class IssueService {
     @Autowired
     ImageSaveService imageSaveService;
 
+    @Autowired
+    UtilService utilService;
+
     private static final Logger LOGGER = LogManager.getLogger(IssueService.class);
     public ResponseEntity addIssue(IssueDTO issueDTO){
             Issue issue = new Issue();
@@ -53,8 +57,8 @@ public class IssueService {
             issue.setStatus(issueDTO.getStatus());
             issue.setLat(issueDTO.getLat());
             issue.setLon(issueDTO.getLon());
-            issue.setCreatedDate(new Date());
-            issue.setUpdatedDate(new Date());
+            issue.setCreatedDate(utilService.getTime());
+            issue.setUpdatedDate(utilService.getTime());
             if(issueDTO.getUser() != null)
                 issue.setUser(userService.getUser(issueDTO.getUser().getId()));
             if(issueDTO.getArea() != null)

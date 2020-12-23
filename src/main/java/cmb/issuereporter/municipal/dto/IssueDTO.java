@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.transform.sax.SAXResult;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
@@ -18,8 +19,8 @@ public class IssueDTO {
     private String status;
     private Double lat;
     private Double lon;
-    private Date createdDate;
-    private Date updatedDate;
+    private Timestamp createdDate;
+    private Timestamp updatedDate;
     private CategoryDTO category;
     private AreaDTO area;
     private UserDTO user;

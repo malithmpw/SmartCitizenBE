@@ -14,7 +14,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -64,6 +70,13 @@ public class UtilService {
         appDataResponse.setAreas(areas);
 
         return new ResponseEntity(appDataResponse, HttpStatus.OK);
+    }
+
+    public Timestamp getTime(){
+        LocalDateTime today = LocalDateTime.now();
+        ZoneId lankaZoneId = ZoneId.of("Asia/Colombo");
+        ZonedDateTime asiaZonedDateTime = today.atZone(lankaZoneId);
+        return Timestamp.from(asiaZonedDateTime.toInstant());
     }
 
 
