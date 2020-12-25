@@ -163,7 +163,7 @@ public class IssueService {
 
     public ResponseEntity getIssueList(IssueListRequestDTO issueListRequestDTO){
         Pageable sortedByDate =
-                PageRequest.of(issueListRequestDTO.getPageNo(), pageItemCount, Sort.by("createdDate"));
+                PageRequest.of(issueListRequestDTO.getPageNo(), pageItemCount, Sort.by("createdDate").descending());
         User user = userService.getUser(issueListRequestDTO.getUserId());
         Page<Issue> issueListPage = null;
         Date startDate = null;
