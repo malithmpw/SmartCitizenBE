@@ -57,8 +57,8 @@ public class IssueService {
             issue.setStatus(issueDTO.getStatus());
             issue.setLat(issueDTO.getLat());
             issue.setLon(issueDTO.getLon());
-            issue.setCreatedDate(utilService.getTime());
-            issue.setUpdatedDate(utilService.getTime());
+            issue.setCreatedDate(new Date());
+            issue.setUpdatedDate(new Date());
             if(issueDTO.getUser() != null)
                 issue.setUser(userService.getUser(issueDTO.getUser().getId()));
             if(issueDTO.getArea() != null)
@@ -176,7 +176,7 @@ public class IssueService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        if(startDate != null && endDate != null){
+        if(user != null && startDate != null && endDate != null){
             if(user.getRole() == null || user.getRole().getName().equals("USER")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), user.getId(), issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
                 LOGGER.info("Issue Search by USER  ");

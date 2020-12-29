@@ -1,13 +1,9 @@
 package cmb.issuereporter.municipal.dto;
 
-import cmb.issuereporter.municipal.model.Area;
-import cmb.issuereporter.municipal.model.Category;
-import cmb.issuereporter.municipal.model.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.transform.sax.SAXResult;
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
@@ -19,8 +15,10 @@ public class IssueDTO {
     private String status;
     private Double lat;
     private Double lon;
-    private Timestamp createdDate;
-    private Timestamp updatedDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Colombo")
+    private Date createdDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Colombo")
+    private Date updatedDate;
     private CategoryDTO category;
     private AreaDTO area;
     private UserDTO user;

@@ -1,6 +1,7 @@
 package cmb.issuereporter.municipal.model;
 
 import cmb.issuereporter.municipal.converter.StringArrayConverter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,10 +31,12 @@ public class Issue {
     private Double lon;
 
     @Column(name = "created_date")
-    private Timestamp createdDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Colombo")
+    private Date createdDate;
 
     @Column(name = "updated_date")
-    private Timestamp updatedDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Colombo")
+    private Date updatedDate;
 
     @OneToOne
     @JoinColumn(name = "category_id")
