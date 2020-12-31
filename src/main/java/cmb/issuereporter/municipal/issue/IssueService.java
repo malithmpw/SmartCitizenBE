@@ -108,7 +108,7 @@ public class IssueService {
                 issue.setLat(issueDTO.getLat());
                 issue.setLon(issueDTO.getLon());
                 issue.setCreatedDate(issueDTO.getCreatedDate());
-                issue.setUpdatedDate(issueDTO.getUpdatedDate());
+                issue.setUpdatedDate(new Date());
                 if (issueDTO.getUser() != null)
                     issue.setUser(userService.getUser(issueDTO.getUser().getId()));
                 if (issueDTO.getArea() != null)
@@ -255,4 +255,31 @@ public class IssueService {
 
         return new ResponseEntity(issueListResponseDTO, HttpStatus.OK);
      }
+
+
+    public ResponseEntity updateIssueDetail(List<IssueDTO> issueDTOs){
+        List<Issue> updatedIssues = new ArrayList<>();
+        issueDTOs.stream().forEach(issueDTO -> {
+            Issue issue = issueRepository.findById(issueDTO.getId()).orElse(null);
+            if(issue != null) {
+                issue.setUpdatedDate(new Date());
+                if (issueDTO.getUser() != null)
+                    issue.setUser(userService.getUser(issueDTO.getUser().getId()));
+                if (issueDTO.getArea() != null)
+                    issue.setArea(areaService.findById(issueDTO.getArea().getId()));
+                if (issueDTO.getAssignBy() != null)
+                    issue.setAssignBy(userService.getUser(issueDTO.getAssignBy().getId()));
+                if (issueDTO.getAssignee() != null)
+                    issue.setAssignee(userService.getUser(issueDTO.getAssignee().getId()));
+                if (issueDTO.getCategory() != null)
+                    issue.setCategory(categoryService.findById(issueDTO.getCategory().getId()));
+                LOGGER.info("Issue Update : Success  ");
+                updatedIssues.add(issueRepository.save(issue));
+            }else {
+                LOGGER.info("Issue Not found  "+ issueDTO.getId());
+            }
+        });
+        return new ResponseEntity(updatedIssues, HttpStatus.OK);
+
+    }
 }

@@ -33,6 +33,12 @@ public class IssueController {
         return issueService.updateIssue(issueDTOs);
     }
 
+    @PostMapping(value = "/update/details")
+    public ResponseEntity updateIssueDetails(@RequestBody List<IssueDTO> issueDTOs){
+        LOGGER.info("Update Issue List : " + issueDTOs.size());
+        return issueService.updateIssueDetail(issueDTOs);
+    }
+
     @PostMapping(value = "/add")
     public ResponseEntity addIssue(@RequestBody IssueDTO issueDTO){
         LOGGER.info("Add Issue : " + issueDTO.getUser().getPhoneNo());
