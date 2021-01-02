@@ -273,6 +273,8 @@ public class IssueService {
                     issue.setAssignee(userService.getUser(issueDTO.getAssignee().getId()));
                 if (issueDTO.getCategory() != null)
                     issue.setCategory(categoryService.findById(issueDTO.getCategory().getId()));
+                if (issueDTO.getStatus() != null)
+                    issue.setStatus(issueDTO.getStatus());
                 LOGGER.info("Issue Update : Success  ");
                 updatedIssues.add(issueRepository.save(issue));
             }else {
