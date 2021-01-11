@@ -30,6 +30,10 @@ public class Issue {
 
     private Double lon;
 
+    private String directions;
+
+    private String resolution;
+
     @Column(name = "created_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Colombo")
     private Date createdDate;

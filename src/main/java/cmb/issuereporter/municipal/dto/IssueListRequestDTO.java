@@ -20,4 +20,6 @@ public class IssueListRequestDTO {
 
     private Integer pageNo;
 
+    private boolean allIssue;
+
 }

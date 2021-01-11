@@ -27,6 +27,12 @@ public class UserController {
         return new ResponseEntity("Automatic build trigger...  "+new Date(), HttpStatus.OK);
     }
 
+    @GetMapping("/check")
+    public ResponseEntity checkNumber(@RequestParam String isRegisteredUser){
+        LOGGER.info("Phone number Check : " + isRegisteredUser);
+        return userService.checkPhoneNumber(isRegisteredUser);
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO loginRequestDTO){

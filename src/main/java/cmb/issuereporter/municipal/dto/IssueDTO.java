@@ -15,6 +15,8 @@ public class IssueDTO {
     private String status;
     private Double lat;
     private Double lon;
+    private String directions;
+    private String resolution;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Colombo")
     private Date createdDate;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Colombo")

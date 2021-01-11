@@ -41,6 +41,17 @@ public class UserService {
         }
     }
 
+    public ResponseEntity checkPhoneNumber(String phoneNo){
+        User user = userRepository.findByPhoneNo(phoneNo);
+        if(user == null){
+            LOGGER.info("Phone number Check : " + false);
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }else{
+            LOGGER.info("Phone number Check  : " + true);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+    }
+
     public ResponseEntity userRegistration(UserDTO userDTO) {
         if(checkPhoneNoAlreadyExist(userDTO.getPhoneNo())){
             LOGGER.info("User Registration : Phone Number Already Exist  : " + userDTO.getPhoneNo());

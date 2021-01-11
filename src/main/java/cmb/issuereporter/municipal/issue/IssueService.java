@@ -59,6 +59,8 @@ public class IssueService {
             issue.setLon(issueDTO.getLon());
             issue.setCreatedDate(new Date());
             issue.setUpdatedDate(new Date());
+            issue.setDirections(issueDTO.getDirections());
+            issue.setResolution(issueDTO.getResolution());
             if(issueDTO.getUser() != null)
                 issue.setUser(userService.getUser(issueDTO.getUser().getId()));
             if(issueDTO.getArea() != null)
@@ -109,6 +111,8 @@ public class IssueService {
                 issue.setLon(issueDTO.getLon());
                 issue.setCreatedDate(issueDTO.getCreatedDate());
                 issue.setUpdatedDate(new Date());
+                issue.setDirections(issueDTO.getDirections());
+                issue.setResolution(issueDTO.getResolution());
                 if (issueDTO.getUser() != null)
                     issue.setUser(userService.getUser(issueDTO.getUser().getId()));
                 if (issueDTO.getArea() != null)
@@ -183,8 +187,11 @@ public class IssueService {
             }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_USER")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
                 LOGGER.info("Issue Search by SUPER_USER  ");
-            }else if(user.getRole() != null && user.getRole().getName().equals("ADMIN")){
+            }else if(user.getRole() != null && user.getRole().getName().equals("ADMIN") && issueListRequestDTO.isAllIssue()){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
+                LOGGER.info("Issue Search by ADMIN  ");
+            }else if(user.getRole() != null && user.getRole().getName().equals("ADMIN") && !issueListRequestDTO.isAllIssue()){
+                issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), user.getId(), null, startDate, endDate,  sortedByDate);
                 LOGGER.info("Issue Search by ADMIN  ");
             }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_ADMIN")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
@@ -203,6 +210,8 @@ public class IssueService {
             issueDTO.setLat(issue.getLat());
             issueDTO.setLon(issue.getLon());
             issueDTO.setStatus(issue.getStatus());
+            issueDTO.setDirections(issue.getDirections());
+            issueDTO.setResolution(issue.getResolution());
             if(issue.getAssignee() != null){
                 UserDTO userDTO = new UserDTO();
                 userDTO.setEmail(issue.getAssignee().getEmail());
@@ -275,6 +284,10 @@ public class IssueService {
                     issue.setCategory(categoryService.findById(issueDTO.getCategory().getId()));
                 if (issueDTO.getStatus() != null)
                     issue.setStatus(issueDTO.getStatus());
+                if (issueDTO.getDirections() != null)
+                    issue.setDirections(issueDTO.getDirections());
+                if (issueDTO.getResolution() != null)
+                    issue.setResolution(issueDTO.getResolution());
                 LOGGER.info("Issue Update : Success  ");
                 updatedIssues.add(issueRepository.save(issue));
             }else {
