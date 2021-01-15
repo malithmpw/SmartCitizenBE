@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>cmb.issuereporter</groupId>
 	<artifactId>smartcity</artifactId>
-	<version>0.0.19-SNAPSHOT</version>
+	<version>0.0.20-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>municipal</name>
 	<description>Issue report project for Colombo municipal council</description>
