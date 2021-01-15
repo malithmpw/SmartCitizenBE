@@ -46,7 +46,7 @@ public class UtilService {
         List<UserDTO> userDTOS = new ArrayList<>();
         if(userId != null){
             User user = userService.getUser(userId);
-            if(!(user.getRole() == null || user.getRole().getName().equals("USER"))){
+            if(user.getRole() != null){
 
                 users = userService.getAdminList("ADMIN");
                 users.stream().forEach(userObj -> {
