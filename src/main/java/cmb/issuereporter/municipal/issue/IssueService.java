@@ -184,18 +184,18 @@ public class IssueService {
             if(user.getRole() == null || user.getRole().getName().equals("USER")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), user.getId(), issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
                 LOGGER.info("Issue Search by USER  ");
-            }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_USER")){
+            }else if(user.getRole() != null && user.getRole().getName().equals("SUPERUSER")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
-                LOGGER.info("Issue Search by SUPER_USER  ");
+                LOGGER.info("Issue Search by SUPERUSER  ");
             }else if(user.getRole() != null && user.getRole().getName().equals("ADMIN") && issueListRequestDTO.isAllIssue()){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
                 LOGGER.info("Issue Search by ADMIN  ");
             }else if(user.getRole() != null && user.getRole().getName().equals("ADMIN") && !issueListRequestDTO.isAllIssue()){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), user.getId(), null, startDate, endDate,  sortedByDate);
                 LOGGER.info("Issue Search by ADMIN  ");
-            }else if(user.getRole() != null && user.getRole().getName().equals("SUPER_ADMIN")){
+            }else if(user.getRole() != null && user.getRole().getName().equals("SUPERADMIN")){
                 issueListPage = issueRepository.findIssue(issueListRequestDTO.getAreaId(), issueListRequestDTO.getCategoryId(), null, issueListRequestDTO.getStatus(), null, null, startDate, endDate,  sortedByDate);
-                LOGGER.info("Issue Search by SUPER_ADMIN  ");
+                LOGGER.info("Issue Search by SUPERADMIN  ");
             }
         }
         IssueListResponseDTO issueListResponseDTO = new IssueListResponseDTO();
