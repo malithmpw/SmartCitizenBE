@@ -40,6 +40,12 @@ public class UserController {
         return userService.login(loginRequestDTO.getPhoneNo(), loginRequestDTO.getPassword());
     }
 
+    @PostMapping("/forgotPassword")
+    public ResponseEntity forgotPassword(@RequestBody LoginRequestDTO loginRequestDTO){
+        LOGGER.info("User Forgot Password : " + loginRequestDTO.getPhoneNo());
+        return userService.forgotPassword(loginRequestDTO.getPhoneNo(), loginRequestDTO.getPassword());
+    }
+
     @PostMapping("/register")
     public ResponseEntity registerUser(@RequestBody UserDTO userDTO){
         LOGGER.info("User Registration : " + userDTO.getPhoneNo());

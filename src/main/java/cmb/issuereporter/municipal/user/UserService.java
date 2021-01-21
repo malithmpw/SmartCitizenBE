@@ -199,4 +199,17 @@ public class UserService {
         LOGGER.info("Get Admin User List  " );
         return userRepository.getAdminUserList(roleName);
     }
+
+    public ResponseEntity forgotPassword(String phoneNo, String password) {
+        User user = userRepository.findByPhoneNo(phoneNo);
+        if(user != null){
+            user.setPassword(password);
+            userRepository.save(user);
+            LOGGER.info("User Password Reset : Success  : " + phoneNo);
+            return new ResponseEntity("Successfully Reset Password", HttpStatus.OK);
+        }else{
+            LOGGER.info("User Password Reset : Fail  : User Not Found" + phoneNo);
+            return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
+        }
+    }
 }
