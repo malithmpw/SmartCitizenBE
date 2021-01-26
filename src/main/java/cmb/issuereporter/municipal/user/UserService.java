@@ -206,10 +206,10 @@ public class UserService {
             user.setPassword(password);
             userRepository.save(user);
             LOGGER.info("User Password Reset : Success  : " + phoneNo);
-            return new ResponseEntity("Successfully Reset Password", HttpStatus.OK);
+            return new ResponseEntity(user, HttpStatus.OK);
         }else{
             LOGGER.info("User Password Reset : Fail  : User Not Found" + phoneNo);
-            return new ResponseEntity("User Not Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new CustomError(3001,"User Not Found"), HttpStatus.NOT_FOUND);
         }
     }
 }
